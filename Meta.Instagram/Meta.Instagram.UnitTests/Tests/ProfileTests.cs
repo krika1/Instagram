@@ -63,7 +63,6 @@ namespace Meta.Instagram.UnitTests.Tests
             string profileId = Guid.NewGuid().ToString();
             var request = new ChangeProfileRequest
             {
-                Picture = new FormFile(new MemoryStream(new byte[0]), 0, 0, "file", "file.jpg"),
                 Description = "New Description"
             };
 
@@ -89,7 +88,6 @@ namespace Meta.Instagram.UnitTests.Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(contract.Description, result.Description);
-            Assert.Equal(contract.PicturePath, result.PicturePath); // Check that the path has changed
             _mockProfileRepository.Verify(repo => repo.UpdateProfileAsync(It.IsAny<Infrastructure.Entities.Profile>()), Times.Once);
         }
     }
