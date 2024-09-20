@@ -1,6 +1,7 @@
 ﻿using Auth0.ManagementApi.Models;
 using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.Entities;
+using Meta.Instagram.Infrastructure.Helpers;
 using Profile = AutoMapper.Profile;
 
 namespace Meta.Instagram.Api.Mapping
@@ -10,7 +11,7 @@ namespace Meta.Instagram.Api.Mapping
         public AccountProfile()
         {
             _ = CreateMap<User, Account>()
-                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => Guid.NewGuid().ToString()))
+                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => IdGenerator.GenerateAccountId()))
                 .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
