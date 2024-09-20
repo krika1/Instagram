@@ -3,6 +3,7 @@ using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.DTOs.Requests;
 using Meta.Instagram.Infrastructure.Entities;
 using Meta.Instagram.Infrastructure.Exceptions;
+using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Repositories;
 using Meta.Instagram.Infrastructure.Services;
 
@@ -77,10 +78,24 @@ namespace Meta.Instagram.Bussines.Services
             }
         }
 
+        public async Task<AccountContract> UpdateAccountAsync(string accountId, ChanageAccountRequest request)
+        {
+            var account = await GetAccount(accountId).ConfigureAwait(false);
+
+            account.UpdatedAt = DateTime.Now;
+            account.Phone = request.PhoneNumber;
+
+            await _accountRepository.UpdateAccountAsync(account);
+
+            var updatedAccount = await GetAccount(accountId).ConfigureAwait(false);
+
+            return _mapper.Map<AccountContract>(updatedAccount);
+        }
+
         private async Task<Account> GetAccount(string accountId)
         {
             return await _accountRepository.GetAccountAsync(accountId).ConfigureAwait(false)
-                    ?? throw new NotFoundException("Account not found.");
+                    ?? throw new NotFoundException(ErrorMessages.AccountNotFoundErrorMessage);
         }
     }
 }

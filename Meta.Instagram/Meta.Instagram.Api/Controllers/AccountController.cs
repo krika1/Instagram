@@ -1,6 +1,7 @@
 ﻿using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.DTOs.Requests;
 using Meta.Instagram.Infrastructure.Exceptions;
+using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Helpers;
 using Meta.Instagram.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -39,38 +40,37 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Get Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetAccountFailedTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Get Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetAccountFailedTitle);
             }
         }
 
-        [HttpDelete, Route("accounts/{accountId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost, Route("accounts")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> DeleteAccountAsync([BindRequired, FromRoute] string accountId)
+        public async Task<ActionResult<AccountContract>> PostAccountAsync([BindRequired, FromBody] CreateAccountRequest request)
         {
             try
             {
-                await _accountService.DeleteAccountAsync(accountId).ConfigureAwait(false);
+                var createdAccount = await _accountService.PostAccountAsync(request).ConfigureAwait(false);
 
-                return NoContent();
+                return Created(createdAccount.AccountId, createdAccount);
             }
-            catch (NotFoundException ex)
+            catch (AuthenticationException ex)
             {
-                return ObjectResultConverter.ToNotFound(ex.Message);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.CreateAccountFailedTitle);
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Delete Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.CreateAccountFailedTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Delete Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.CreateAccountFailedTitle);
             }
         }
 
@@ -93,41 +93,69 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (AuthenticationException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.ChangeAccountPasswordFailedTitle);
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.ChangeAccountPasswordFailedTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.ChangeAccountPasswordFailedTitle);
             }
         }
 
-        [HttpPost, Route("accounts")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPut, Route("accounts/{accountId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<AccountContract>> PostAccountAsync([BindRequired, FromBody] CreateAccountRequest request)
+        public async Task<ActionResult<AccountContract>> UpdateAccountAsync([BindRequired, FromRoute] string accountId, [BindRequired, FromBody] ChanageAccountRequest request)
         {
             try
             {
-                var createdAccount = await _accountService.PostAccountAsync(request).ConfigureAwait(false);
+                var updatedAccount = await _accountService.UpdateAccountAsync(accountId, request).ConfigureAwait(false);
 
-                return Created(createdAccount.AccountId, createdAccount);
+                return Ok(updatedAccount);
             }
-            catch (AuthenticationException ex)
+            catch (NotFoundException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
+                return ObjectResultConverter.ToNotFound(ex.Message);
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+            }
+        }
+
+        [HttpDelete, Route("accounts/{accountId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteAccountAsync([BindRequired, FromRoute] string accountId)
+        {
+            try
+            {
+                await _accountService.DeleteAccountAsync(accountId).ConfigureAwait(false);
+
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.DeleteAccountFailedTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.DeleteAccountFailedTitle);
             }
         }
     }
