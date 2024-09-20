@@ -10,6 +10,7 @@ namespace Meta.Instagram.Api.Mapping
             _ = CreateMap<Account, Infrastructure.Entities.Profile>()
                .ForMember(dest => dest.ProfileId, opt => opt.MapFrom(src => Guid.NewGuid().ToString()))
                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+               .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => true))
                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username));
 
             _ = CreateMap<Infrastructure.Entities.Profile, ProfileContract>();

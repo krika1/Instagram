@@ -25,7 +25,7 @@ namespace Meta.Instagram.Bussines.Services
             var profile = await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
                     ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
 
-            return _mapper.Map<ProfileContract>(profile);   
+            return _mapper.Map<ProfileContract>(profile);
         }
 
         public async Task<ProfileContract> UpdateProfileAsync(string profileId, ChangeProfileRequest request)
@@ -53,6 +53,10 @@ namespace Meta.Instagram.Bussines.Services
             if (request.Description is not null)
             {
                 profile.Description = request.Description;
+            }
+            if (request.IsPublic.HasValue)
+            {
+                profile.IsPublic = request.IsPublic.Value;
             }
 
             profile.UpdatedAt = DateTime.Now;
