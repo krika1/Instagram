@@ -50,6 +50,8 @@ namespace Meta.Instagram.Bussines.Services
 
             await _authenticationService.DeleteAuth0UserAsync(account.ExternalId!).ConfigureAwait(false);
 
+            await _profileRepository.DeleteProfileAsync(account.Profile!).ConfigureAwait(false);
+
             await _accountRepository.DeleteAccountAsync(account).ConfigureAwait(false);
         }
 

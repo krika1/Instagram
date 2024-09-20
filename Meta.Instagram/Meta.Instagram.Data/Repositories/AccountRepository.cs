@@ -55,6 +55,7 @@ namespace Meta.Instagram.Data.Repositories
             try
             {
                 var account = await _db.Accounts
+                    .Include(x => x.Profile)
                     .FirstOrDefaultAsync(x => x.AccountId == accountId);
 
                 return account!;
