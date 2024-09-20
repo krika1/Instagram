@@ -1,5 +1,6 @@
 ﻿using Meta.Instagram.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Meta.Instagram.Data.Context
 {
@@ -13,11 +14,31 @@ namespace Meta.Instagram.Data.Context
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Follow> Follows { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateAccountModelBuilder(modelBuilder);
             CreateProfileModelBuilder(modelBuilder);
+            CreateProfileFollowModelBuilder(modelBuilder);
+        }
+
+        private void CreateProfileFollowModelBuilder(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Follow>()
+                .HasKey(pf => new { pf.FollowerId, pf.FollowingId });
+
+            modelBuilder.Entity<Follow>()
+                .HasOne(pf => pf.Follower)
+                .WithMany(p => p.Following)
+                .HasForeignKey(pf => pf.FollowerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Follow>()
+                .HasOne(pf => pf.Following)
+                .WithMany(p => p.Followers)
+                .HasForeignKey(pf => pf.FollowingId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void CreateProfileModelBuilder(ModelBuilder modelBuilder)

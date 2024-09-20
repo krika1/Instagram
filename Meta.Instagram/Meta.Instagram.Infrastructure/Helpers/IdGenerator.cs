@@ -17,7 +17,7 @@
 
         private static string GenerateIdWithPrefix(string prefix)
         {
-            var randomChars = new string(Enumerable.Repeat(Characters, 10)
+            var randomChars = new string(Enumerable.Repeat(Characters, 32)
                                                    .Select(s => s[Random.Next(s.Length)])
                                                    .ToArray());
             return $"{prefix}{randomChars}";
