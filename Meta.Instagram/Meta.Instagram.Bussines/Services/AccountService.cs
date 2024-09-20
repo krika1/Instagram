@@ -12,14 +12,19 @@ namespace Meta.Instagram.Bussines.Services
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IProfileRepository _profileRepository;
         private readonly IAuthenticationService _authenticationService;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepository, IAuthenticationService authenticationService, IMapper mapper)
+        public AccountService(IAccountRepository accountRepository,
+            IAuthenticationService authenticationService,
+            IMapper mapper,
+            IProfileRepository profileRepository)
         {
             _accountRepository = accountRepository;
             _authenticationService = authenticationService;
             _mapper = mapper;
+            _profileRepository=profileRepository;
         }
 
         public async Task ChangeAccountPasswordAsync(ChangeAccountPasswordRequest request)
@@ -65,6 +70,11 @@ namespace Meta.Instagram.Bussines.Services
                 domainAccount.Phone = request.Phone;
 
                 var createdAccount = await _accountRepository.CreateAccountAsync(domainAccount).ConfigureAwait(false);
+
+                var profile = _mapper.Map<Infrastructure.Entities.Profile>(createdAccount);
+                profile.AccountId = createdAccount.AccountId;
+
+                await _profileRepository.CreateProfileAsync(profile).ConfigureAwait(false);
 
                 return _mapper.Map<AccountContract>(createdAccount);
             }

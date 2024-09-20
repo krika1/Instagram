@@ -39,6 +39,8 @@ namespace Meta.Instagram.Api
             builder.Services.Configure<Auth0Options>(builder.Configuration.GetSection(nameof(Auth0Options)));
 
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 

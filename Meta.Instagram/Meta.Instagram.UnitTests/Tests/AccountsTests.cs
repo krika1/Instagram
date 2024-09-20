@@ -15,12 +15,14 @@ namespace Meta.Instagram.UnitTests.Tests
     {
         private readonly Mock<IAuthenticationService> _mockAuth0Service;
         private readonly Mock<IAccountRepository> _mockAccountRepository;
+        private readonly Mock<IProfileRepository> _mockProfileRepository;
         private readonly Mock<IMapper> _mockMapper;
 
         public AccountsTests()
         {
             _mockAuth0Service = new Mock<IAuthenticationService>();
             _mockAccountRepository = new Mock<IAccountRepository>();
+            _mockProfileRepository = new Mock<IProfileRepository>();
             _mockMapper = new Mock<IMapper>();
         }
 
@@ -33,7 +35,8 @@ namespace Meta.Instagram.UnitTests.Tests
             var request = new CreateAccountRequest { Phone = "1234567890" };
             var auth0User = new User();
             var domainAccount = new Account { Phone = request.Phone };
-            var createdAccount = new Account { /* Initialize properties */ };
+            var createdAccount = new Account { AccountId = "1234" };
+            var domainProfile = new Infrastructure.Entities.Profile { };
             var accountContract = new AccountContract { /* Initialize properties */ };
 
             _mockAuth0Service
@@ -45,6 +48,14 @@ namespace Meta.Instagram.UnitTests.Tests
             _mockAccountRepository
                 .Setup(x => x.CreateAccountAsync(domainAccount))
                 .ReturnsAsync(createdAccount);
+            _mockMapper
+               .Setup(x => x.Map<Account>(createdAccount))
+               .Returns(domainAccount);
+            _mockMapper
+               .Setup(x => x.Map<Infrastructure.Entities.Profile>(createdAccount))
+               .Returns(domainProfile);
+            _mockProfileRepository
+               .Setup(x => x.CreateProfileAsync(domainProfile));
             _mockMapper
                 .Setup(x => x.Map<AccountContract>(createdAccount))
                 .Returns(accountContract);
@@ -370,7 +381,7 @@ namespace Meta.Instagram.UnitTests.Tests
 
         private AccountService CreateTestService()
         {
-            return new AccountService(_mockAccountRepository.Object, _mockAuth0Service.Object, _mockMapper.Object);
+            return new AccountService(_mockAccountRepository.Object, _mockAuth0Service.Object, _mockMapper.Object, _mockProfileRepository.Object);
         }
     }
 }
