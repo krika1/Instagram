@@ -60,6 +60,20 @@ namespace Meta.Instagram.Bussines.Services
                 throw new AuthenticationException(ex.Message);
             }
         }
+
+        public async Task DeleteAuth0UserAsync(string userId)
+        {
+            try
+            {
+                var managementApiClient = new ManagementApiClient(await GetToken(), _options.Domain);
+
+                await managementApiClient.Users.DeleteAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new AuthenticationException(ex.Message);
+            }
+        }
         private async Task<string> GetToken()
         {
             var tokenRequest = new ClientCredentialsTokenRequest

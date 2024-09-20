@@ -245,6 +245,52 @@ namespace Meta.Instagram.UnitTests.Tests
 
         #endregion
 
+        #region DELETE Account
+
+        [Fact]
+        public async Task DeleteAccountAsync_AccountExists_DeletesAccountSuccessfully()
+        {
+            // Arrange
+            var accountId = "test-id";
+            var account = new Account { AccountId = accountId, ExternalId = "external-id" };
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync(account);
+            _mockAuth0Service.Setup(auth => auth.DeleteAuth0UserAsync(account.ExternalId!))
+                .Returns(Task.CompletedTask);
+            _mockAccountRepository.Setup(repo => repo.DeleteAccountAsync(account))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var service = CreateTestService();
+            await service.DeleteAccountAsync(accountId);
+
+            // Assert
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Once);
+            _mockAuth0Service.Verify(auth => auth.DeleteAuth0UserAsync(account.ExternalId!), Times.Once);
+            _mockAccountRepository.Verify(repo => repo.DeleteAccountAsync(account), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteAccountAsync_AccountDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            var accountId = "non-existent-id";
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync((Account)null);
+
+            // Act & Assert
+            var service = CreateTestService();
+            await Assert.ThrowsAsync<NotFoundException>(() => service.GetAccountAsync(accountId));
+
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Once);
+            _mockAuth0Service.Verify(auth => auth.DeleteAuth0UserAsync(It.IsAny<string>()), Times.Never);
+            _mockAccountRepository.Verify(repo => repo.DeleteAccountAsync(It.IsAny<Account>()), Times.Never);
+        }
+
+        #endregion
+
         private AccountService CreateTestService()
         {
             return new AccountService(_mockAccountRepository.Object, _mockAuth0Service.Object, _mockMapper.Object);

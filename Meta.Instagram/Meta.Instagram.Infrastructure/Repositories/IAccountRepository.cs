@@ -7,5 +7,6 @@ namespace Meta.Instagram.Infrastructure.Repositories
         Task<Account> CreateAccountAsync(Account account);
         Task<Account> GetAccountAsync(string accountId);
         Task UpdateAccountAsync(Account account);
+        Task DeleteAccountAsync(Account account);
     }
 }
