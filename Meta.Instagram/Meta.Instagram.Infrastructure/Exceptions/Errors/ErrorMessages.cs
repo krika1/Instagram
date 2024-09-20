@@ -3,5 +3,9 @@
     public static class ErrorMessages
     {
         public static string AccountNotFoundErrorMessage = "Account not found.";
+        public static string ProfileNotFoundErrorMessage = "Profile not found.";
+
+        public static string InvalidFileTypeErrorMessage = "Invalid file type.";
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Meta.Instagram.Infrastructure.Entities;
+﻿using Meta.Instagram.Infrastructure.DTOs.Contracts;
+using Meta.Instagram.Infrastructure.Entities;
 
 namespace Meta.Instagram.Api.Mapping
 {
@@ -10,6 +11,8 @@ namespace Meta.Instagram.Api.Mapping
                .ForMember(dest => dest.ProfileId, opt => opt.MapFrom(src => Guid.NewGuid().ToString()))
                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username));
+
+            _ = CreateMap<Infrastructure.Entities.Profile, ProfileContract>();
         }
     }
 }

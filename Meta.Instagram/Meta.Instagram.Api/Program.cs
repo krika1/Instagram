@@ -1,4 +1,3 @@
-
 using Meta.Instagram.Data.Context;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +41,7 @@ namespace Meta.Instagram.Api
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
