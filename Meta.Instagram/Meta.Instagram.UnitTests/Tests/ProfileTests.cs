@@ -3,6 +3,7 @@ using Meta.Instagram.Bussines.Services;
 using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.DTOs.Requests;
 using Meta.Instagram.Infrastructure.Exceptions;
+using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http.Internal;
 using Moq;
@@ -90,5 +91,63 @@ namespace Meta.Instagram.UnitTests.Tests
             Assert.Equal(contract.Description, result.Description);
             _mockProfileRepository.Verify(repo => repo.UpdateProfileAsync(It.IsAny<Infrastructure.Entities.Profile>()), Times.Once);
         }
+
+        [Fact]
+        public async Task GetProfileAsync_ProfileNotFound_ThrowsNotFoundException()
+        {
+            // Arrange
+            string profileId = Guid.NewGuid().ToString();
+
+            _mockProfileRepository
+                .Setup(repo => repo.GetProfileAsync(profileId))
+                .ReturnsAsync((Infrastructure.Entities.Profile)null); // Simulating a not found profile
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => _profileService.GetProfileAsync(profileId));
+            Assert.Equal(ErrorMessages.ProfileNotFoundErrorMessage, exception.Message);
+        }
+
+        [Fact]
+        public async Task GetProfileAsync_ProfileFound_ReturnsProfileContract()
+        {
+            // Arrange
+            string profileId = Guid.NewGuid().ToString();
+            var profile = new Infrastructure.Entities.Profile
+            {
+                ProfileId = profileId,
+                Username = "Test Profile",
+                PicturePath = "path/to/picture.jpg",
+                Description = "Profile Description"
+            };
+            var profileContract = new ProfileContract
+            {
+                ProfileId = profileId,
+                Username = "Test Profile",
+                PicturePath = "path/to/picture.jpg",
+                Description = "Profile Description"
+            };
+
+            _mockProfileRepository
+                .Setup(repo => repo.GetProfileAsync(profileId))
+                .ReturnsAsync(profile); // Simulating a found profile
+
+            _mockMapper
+                .Setup(mapper => mapper.Map<ProfileContract>(profile))
+                .Returns(profileContract); // Simulating mapping behavior
+
+            // Act
+            var result = await _profileService.GetProfileAsync(profileId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(profileContract.ProfileId, result.ProfileId);
+            Assert.Equal(profileContract.Username, result.Username);
+            Assert.Equal(profileContract.PicturePath, result.PicturePath);
+            Assert.Equal(profileContract.Description, result.Description);
+
+            _mockProfileRepository.Verify(repo => repo.GetProfileAsync(profileId), Times.Once);
+            _mockMapper.Verify(mapper => mapper.Map<ProfileContract>(profile), Times.Once);
+        }
     }
 }
+
