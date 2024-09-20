@@ -33,6 +33,21 @@ namespace Meta.Instagram.Data.Repositories
             }
         }
 
+        public async Task DeleteProfileAsync(Profile profile)
+        {
+            try
+            {
+                _db.Profiles.Remove(profile);
+
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new DatabaseException(ex.Message);
+            }
+        }
+
         public async Task<Profile> GetProfileAsync(string profileId)
         {
 
