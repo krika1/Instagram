@@ -4,6 +4,7 @@ using Meta.Instagram.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Meta.Instagram.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920085901_AgainAgainAgain")]
+    partial class AgainAgainAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +73,6 @@ namespace Meta.Instagram.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -91,7 +93,8 @@ namespace Meta.Instagram.Data.Migrations
                     b.HasKey("ProfileId");
 
                     b.HasIndex("AccountId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[AccountId] IS NOT NULL");
 
                     b.ToTable("Profiles");
                 });
@@ -101,8 +104,7 @@ namespace Meta.Instagram.Data.Migrations
                     b.HasOne("Meta.Instagram.Infrastructure.Entities.Account", "Account")
                         .WithOne("Profile")
                         .HasForeignKey("Meta.Instagram.Infrastructure.Entities.Profile", "AccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Account");
                 });

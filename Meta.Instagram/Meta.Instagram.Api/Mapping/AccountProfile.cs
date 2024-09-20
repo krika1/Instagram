@@ -1,7 +1,7 @@
 ﻿using Auth0.ManagementApi.Models;
-using AutoMapper;
 using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.Entities;
+using Profile = AutoMapper.Profile;
 
 namespace Meta.Instagram.Api.Mapping
 {

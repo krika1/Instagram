@@ -4,6 +4,7 @@ using Meta.Instagram.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Meta.Instagram.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920085339_AddedFeorighnKeyAgain")]
+    partial class AddedFeorighnKeyAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,6 +55,13 @@ namespace Meta.Instagram.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -60,6 +70,8 @@ namespace Meta.Instagram.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AccountId");
+
+                    b.HasIndex("ProfileId1");
 
                     b.ToTable("Accounts");
                 });
@@ -90,26 +102,29 @@ namespace Meta.Instagram.Data.Migrations
 
                     b.HasKey("ProfileId");
 
-                    b.HasIndex("AccountId")
-                        .IsUnique();
+                    b.HasIndex("AccountId");
 
                     b.ToTable("Profiles");
+                });
+
+            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Account", b =>
+                {
+                    b.HasOne("Meta.Instagram.Infrastructure.Entities.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId1");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Profile", b =>
                 {
                     b.HasOne("Meta.Instagram.Infrastructure.Entities.Account", "Account")
-                        .WithOne("Profile")
-                        .HasForeignKey("Meta.Instagram.Infrastructure.Entities.Profile", "AccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Account", b =>
-                {
-                    b.Navigation("Profile");
                 });
 #pragma warning restore 612, 618
         }
