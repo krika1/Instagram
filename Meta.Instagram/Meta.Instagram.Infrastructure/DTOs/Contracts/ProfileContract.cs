@@ -7,5 +7,7 @@
         public string? Description { get; set; }
         public string? PicturePath { get; set; }
         public bool IsPublic { get; set; }
+        public int Followers { get; set; }
+        public int Following { get; set; }
     }
 }

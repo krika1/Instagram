@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.DTOs.Requests;
+using Meta.Instagram.Infrastructure.Entities;
 using Meta.Instagram.Infrastructure.Exceptions;
 using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Helpers;
 using Meta.Instagram.Infrastructure.Repositories;
 using Meta.Instagram.Infrastructure.Services;
+using Profile = Meta.Instagram.Infrastructure.Entities.Profile;
 
 namespace Meta.Instagram.Bussines.Services
 {
@@ -20,18 +22,26 @@ namespace Meta.Instagram.Bussines.Services
             _mapper = mapper;
         }
 
+        public async Task FollowProfileAsync(string followingId, FollowRequest request)
+        {
+            await GetProfile(followingId).ConfigureAwait(false);
+            await GetProfile(request.FollowerId!).ConfigureAwait(false);
+
+            var followRequest = new Follow { FollowerId =  request.FollowerId, FollowingId = followingId };
+
+            await _profileRepository.FollowProfileAsync(followRequest).ConfigureAwait(false);
+        }
+
         public async Task<ProfileContract> GetProfileAsync(string profileId)
         {
-            var profile = await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
-                    ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
+            var profile = await GetProfile(profileId).ConfigureAwait(false);
 
             return _mapper.Map<ProfileContract>(profile);
         }
 
         public async Task<ProfileContract> UpdateProfileAsync(string profileId, ChangeProfileRequest request)
         {
-            var profile = await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
-                    ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
+            var profile = await GetProfile(profileId).ConfigureAwait(false);
 
             if (request.Picture is not null)
             {
@@ -64,6 +74,12 @@ namespace Meta.Instagram.Bussines.Services
             var updatedProfile = await _profileRepository.UpdateProfileAsync(profile).ConfigureAwait(false);
 
             return _mapper.Map<ProfileContract>(updatedProfile);
+        }
+
+        public async Task<Profile> GetProfile(string profileId)
+        {
+            return await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
+                   ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
         }
     }
 }

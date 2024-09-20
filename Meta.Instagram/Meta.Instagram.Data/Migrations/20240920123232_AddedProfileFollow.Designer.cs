@@ -4,6 +4,7 @@ using Meta.Instagram.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Meta.Instagram.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920123232_AddedProfileFollow")]
+    partial class AddedProfileFollow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,21 +67,6 @@ namespace Meta.Instagram.Data.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Follow", b =>
-                {
-                    b.Property<string>("FollowerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FollowingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("FollowerId", "FollowingId");
-
-                    b.HasIndex("FollowingId");
-
-                    b.ToTable("Follows");
-                });
-
             modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Profile", b =>
                 {
                     b.Property<string>("ProfileId")
@@ -117,7 +105,33 @@ namespace Meta.Instagram.Data.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Follow", b =>
+            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.ProfileFollow", b =>
+                {
+                    b.Property<string>("FollowerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FollowingId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("FollowerId", "FollowingId");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("ProfileFollows");
+                });
+
+            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Profile", b =>
+                {
+                    b.HasOne("Meta.Instagram.Infrastructure.Entities.Account", "Account")
+                        .WithOne("Profile")
+                        .HasForeignKey("Meta.Instagram.Infrastructure.Entities.Profile", "AccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.ProfileFollow", b =>
                 {
                     b.HasOne("Meta.Instagram.Infrastructure.Entities.Profile", "Follower")
                         .WithMany("Following")
@@ -134,17 +148,6 @@ namespace Meta.Instagram.Data.Migrations
                     b.Navigation("Follower");
 
                     b.Navigation("Following");
-                });
-
-            modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Profile", b =>
-                {
-                    b.HasOne("Meta.Instagram.Infrastructure.Entities.Account", "Account")
-                        .WithOne("Profile")
-                        .HasForeignKey("Meta.Instagram.Infrastructure.Entities.Profile", "AccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("Meta.Instagram.Infrastructure.Entities.Account", b =>
