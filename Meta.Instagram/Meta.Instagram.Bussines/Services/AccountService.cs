@@ -25,8 +25,7 @@ namespace Meta.Instagram.Bussines.Services
         {
             try
             {
-                var account = await _accountRepository.GetAccountAsync(request.AccountId!).ConfigureAwait(false)
-                    ?? throw new NotFoundException("Account not found.");
+                var account = await GetAccount(request.AccountId!).ConfigureAwait(false);
 
                 await _authenticationService.ChangeAuth0UserPasswordAsync(account.ExternalId!, request.NewPassword!);
                 account.UpdatedAt = DateTime.Now;
@@ -39,10 +38,18 @@ namespace Meta.Instagram.Bussines.Services
             }
         }
 
+        public async Task DeleteAccountAsync(string accountId)
+        {
+            var account = await GetAccount(accountId).ConfigureAwait(false);
+
+            await _authenticationService.DeleteAuth0UserAsync(account.ExternalId!).ConfigureAwait(false);
+
+            await _accountRepository.DeleteAccountAsync(account).ConfigureAwait(false);
+        }
+
         public async Task<AccountContract> GetAccountAsync(string accountId)
         {
-            var account = await _accountRepository.GetAccountAsync(accountId).ConfigureAwait(false)
-                    ?? throw new NotFoundException("Account not found.");
+            var account = await GetAccount(accountId).ConfigureAwait(false);
 
             return _mapper.Map<AccountContract>(account);
         }
@@ -68,6 +75,12 @@ namespace Meta.Instagram.Bussines.Services
             {
                 throw new DatabaseException(ex.Message);
             }
+        }
+
+        private async Task<Account> GetAccount(string accountId)
+        {
+            return await _accountRepository.GetAccountAsync(accountId).ConfigureAwait(false)
+                    ?? throw new NotFoundException("Account not found.");
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Meta.Instagram.Infrastructure.Services
     {
         Task<AccountContract> PostAccountAsync(CreateAccountRequest request);
         Task ChangeAccountPasswordAsync(ChangeAccountPasswordRequest request);
+        Task DeleteAccountAsync(string accountId);
         Task<AccountContract> GetAccountAsync(string accountId);
     }
 }

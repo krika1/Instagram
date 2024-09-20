@@ -47,6 +47,33 @@ namespace Meta.Instagram.Api.Controllers
             }
         }
 
+        [HttpDelete, Route("accounts/{accountId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteAccountAsync([BindRequired, FromRoute] string accountId)
+        {
+            try
+            {
+                await _accountService.DeleteAccountAsync(accountId).ConfigureAwait(false);
+
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, "Delete Account Failed");
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, "Delete Account Failed");
+            }
+        }
+
         [HttpPut, Route("accounts/change-password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

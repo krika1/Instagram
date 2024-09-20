@@ -35,6 +35,21 @@ namespace Meta.Instagram.Data.Repositories
             }
         }
 
+        public async Task DeleteAccountAsync(Account account)
+        {
+            try
+            {
+                _db.Accounts.Remove(account);
+
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new DatabaseException(ex.Message);
+            }
+        }
+
         public async Task<Account> GetAccountAsync(string accountId)
         {
             try
