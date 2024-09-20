@@ -1,4 +1,5 @@
 ﻿using Meta.Instagram.Infrastructure.DTOs;
+using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,7 +17,7 @@ namespace Meta.Instagram.Infrastructure.Helpers
             var errorContract = new ErrorContract
             {
                 Details = message,
-                Title = "Resource not found",
+                Title = ErrorTitles.ResourceNotFoundTitle,
                 StatusCode = StatusCodes.Status404NotFound
             };
 

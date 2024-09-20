@@ -291,6 +291,83 @@ namespace Meta.Instagram.UnitTests.Tests
 
         #endregion
 
+        #region UPDATE Account
+
+        [Fact]
+        public async Task UpdateAccountAsync_AccountExists_UpdatesAccountSuccessfully()
+        {
+            // Arrange
+            var accountId = "test-id";
+            var request = new ChanageAccountRequest { PhoneNumber = "123-456-7890" };
+            var account = new Account { AccountId = accountId, Phone = "000-000-0000" };
+            var updatedAccount = new Account { AccountId = accountId, Phone = request.PhoneNumber, UpdatedAt = DateTime.Now };
+            var accountContract = new AccountContract { AccountId = accountId, Phone = request.PhoneNumber };
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync(account);
+            _mockAccountRepository.Setup(repo => repo.UpdateAccountAsync(It.IsAny<Account>()))
+                .Returns(Task.CompletedTask);
+            _mockMapper.Setup(mapper => mapper.Map<AccountContract>(It.IsAny<Account>()))
+                .Returns(accountContract);
+
+            // Act
+            var service = CreateTestService();
+            var result = await service.UpdateAccountAsync(accountId, request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(accountContract.AccountId, result.AccountId);
+            Assert.Equal(accountContract.Phone, result.Phone);
+
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Exactly(2)); // Called twice, once before and once after update
+            _mockAccountRepository.Verify(repo => repo.UpdateAccountAsync(It.Is<Account>(acc => acc.Phone == request.PhoneNumber)), Times.Once);
+            _mockMapper.Verify(mapper => mapper.Map<AccountContract>(It.IsAny<Account>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateAccountAsync_AccountDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            var accountId = "non-existent-id";
+            var request = new ChanageAccountRequest { PhoneNumber = "123-456-7890" };
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync((Account)null);
+
+            // Act & Assert
+            var service = CreateTestService();
+            await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateAccountAsync(accountId, request));
+
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Once);
+            _mockAccountRepository.Verify(repo => repo.UpdateAccountAsync(It.IsAny<Account>()), Times.Never);
+            _mockMapper.Verify(mapper => mapper.Map<AccountContract>(It.IsAny<Account>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateAccountAsync_CorrectAccountUpdated()
+        {
+            // Arrange
+            var accountId = "test-id";
+            var request = new ChanageAccountRequest { PhoneNumber = "123-456-7890" };
+            var account = new Account { AccountId = accountId, Phone = "000-000-0000" };
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync(account);
+            _mockAccountRepository.Setup(repo => repo.UpdateAccountAsync(It.IsAny<Account>()))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var service = CreateTestService();
+            await service.UpdateAccountAsync(accountId, request);
+
+            // Assert
+            _mockAccountRepository.Verify(repo => repo.UpdateAccountAsync(It.Is<Account>(acc =>
+                acc.Phone == request.PhoneNumber &&
+                acc.UpdatedAt != default(DateTime))), Times.Once);
+        }
+
+        #endregion
+
         private AccountService CreateTestService()
         {
             return new AccountService(_mockAccountRepository.Object, _mockAuth0Service.Object, _mockMapper.Object);
