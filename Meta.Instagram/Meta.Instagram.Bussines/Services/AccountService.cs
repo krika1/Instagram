@@ -39,6 +39,14 @@ namespace Meta.Instagram.Bussines.Services
             }
         }
 
+        public async Task<AccountContract> GetAccountAsync(string accountId)
+        {
+            var account = await _accountRepository.GetAccountAsync(accountId).ConfigureAwait(false)
+                    ?? throw new NotFoundException("Account not found.");
+
+            return _mapper.Map<AccountContract>(account);
+        }
+
         public async Task<AccountContract> PostAccountAsync(CreateAccountRequest request)
         {
             try

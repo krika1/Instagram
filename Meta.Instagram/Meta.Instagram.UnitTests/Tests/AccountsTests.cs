@@ -199,6 +199,52 @@ namespace Meta.Instagram.UnitTests.Tests
 
         #endregion
 
+        #region GET Account
+
+        [Fact]
+        public async Task GetAccountAsync_AccountExists_ReturnsMappedAccount()
+        {
+            // Arrange
+            var accountId = "test-id";
+            var account = new Account { AccountId = accountId };
+            var accountContract = new AccountContract { AccountId = accountId };
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync(account);
+            _mockMapper.Setup(mapper => mapper.Map<AccountContract>(account))
+                .Returns(accountContract);
+
+            // Act
+            var service = CreateTestService();
+            var result = await service.GetAccountAsync(accountId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(accountContract.AccountId, result.AccountId);
+
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Once);
+            _mockMapper.Verify(mapper => mapper.Map<AccountContract>(account), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAccountAsync_AccountDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            var accountId = "non-existent-id";
+
+            _mockAccountRepository.Setup(repo => repo.GetAccountAsync(accountId))
+                .ReturnsAsync((Account)null);
+
+            // Act & Assert
+            var service = CreateTestService();
+            await Assert.ThrowsAsync<NotFoundException>(() => service.GetAccountAsync(accountId));
+
+            _mockAccountRepository.Verify(repo => repo.GetAccountAsync(accountId), Times.Once);
+            _mockMapper.Verify(mapper => mapper.Map<AccountContract>(It.IsAny<Account>()), Times.Never);
+        }
+
+        #endregion
+
         private AccountService CreateTestService()
         {
             return new AccountService(_mockAccountRepository.Object, _mockAuth0Service.Object, _mockMapper.Object);

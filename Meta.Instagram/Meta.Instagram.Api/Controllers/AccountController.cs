@@ -1,7 +1,7 @@
-﻿using Meta.Instagram.Infrastructure.DTOs;
-using Meta.Instagram.Infrastructure.DTOs.Contracts;
+﻿using Meta.Instagram.Infrastructure.DTOs.Contracts;
 using Meta.Instagram.Infrastructure.DTOs.Requests;
 using Meta.Instagram.Infrastructure.Exceptions;
+using Meta.Instagram.Infrastructure.Helpers;
 using Meta.Instagram.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -20,6 +20,33 @@ namespace Meta.Instagram.Api.Controllers
             _accountService = accountService;
         }
 
+        [HttpGet, Route("accounts/{accountId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<AccountContract>> GetAccountAsync([BindRequired, FromRoute] string accountId)
+        {
+            try
+            {
+                var account = await _accountService.GetAccountAsync(accountId).ConfigureAwait(false);
+
+                return Ok(account);
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, "Get Account Failed");
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, "Get Account Failed");
+            }
+        }
+
         [HttpPut, Route("accounts/change-password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,59 +62,19 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Resource not found",
-                    StatusCode = StatusCodes.Status404NotFound
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status404NotFound
-                };
+                return ObjectResultConverter.ToNotFound(ex.Message);
             }
             catch (AuthenticationException ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Change Password Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
             }
             catch (DatabaseException ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Change Password Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
             }
             catch (Exception ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Change Password Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Change Account Password Failed");
             }
         }
 
@@ -105,45 +92,15 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (AuthenticationException ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Create Account Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
             }
             catch (DatabaseException ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Create Account Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
             }
             catch (Exception ex)
             {
-                var errorContract = new ErrorContract
-                {
-                    Details = ex.Message,
-                    Title = "Create Account Failed",
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                return new ObjectResult(errorContract)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
+                return ObjectResultConverter.ToInternalException(ex.Message, "Create Account Failed");
             }
         }
     }
