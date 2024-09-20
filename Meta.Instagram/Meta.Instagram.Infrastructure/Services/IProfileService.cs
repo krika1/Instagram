@@ -6,5 +6,6 @@ namespace Meta.Instagram.Infrastructure.Services
     public interface IProfileService
     {
         Task<ProfileContract> UpdateProfileAsync(string profileId, ChangeProfileRequest request);
+        Task<ProfileContract> GetProfileAsync(string profileId);
     }
 }

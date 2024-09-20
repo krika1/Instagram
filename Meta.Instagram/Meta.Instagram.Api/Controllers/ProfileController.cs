@@ -51,5 +51,32 @@ namespace Meta.Instagram.Api.Controllers
                 return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
             }
         }
+
+        [HttpGet, Route("profiles/{profileId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ProfileContract>> GetProfileAsync([BindRequired, FromRoute] string profileId)
+        {
+            try
+            {
+                var profile = await _profileService.GetProfileAsync(profileId).ConfigureAwait(false);
+
+                return Ok(profile);
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+            }
+        }
     }
 }

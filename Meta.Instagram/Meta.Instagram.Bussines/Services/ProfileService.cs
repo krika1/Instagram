@@ -20,6 +20,14 @@ namespace Meta.Instagram.Bussines.Services
             _mapper = mapper;
         }
 
+        public async Task<ProfileContract> GetProfileAsync(string profileId)
+        {
+            var profile = await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
+                    ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
+
+            return _mapper.Map<ProfileContract>(profile);   
+        }
+
         public async Task<ProfileContract> UpdateProfileAsync(string profileId, ChangeProfileRequest request)
         {
             var profile = await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
@@ -46,6 +54,8 @@ namespace Meta.Instagram.Bussines.Services
             {
                 profile.Description = request.Description;
             }
+
+            profile.UpdatedAt = DateTime.Now;
 
             var updatedProfile = await _profileRepository.UpdateProfileAsync(profile).ConfigureAwait(false);
 
