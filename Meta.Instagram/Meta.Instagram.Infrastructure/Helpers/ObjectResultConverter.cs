@@ -36,5 +36,19 @@ namespace Meta.Instagram.Infrastructure.Helpers
                 StatusCode = StatusCodes.Status500InternalServerError
             };
         }
+        public static ObjectResult ToBadRequestException(string message)
+        {
+            var errorContract = new ErrorContract
+            {
+                Details = message,
+                Title = "Bad Request",
+                StatusCode = StatusCodes.Status400BadRequest
+            };
+
+            return new ObjectResult(errorContract)
+            {
+                StatusCode = StatusCodes.Status400BadRequest
+            };
+        }
     }
 }

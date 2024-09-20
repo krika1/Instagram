@@ -43,9 +43,9 @@ namespace Meta.Instagram.Data.Context
                       .IsRequired(false);
 
                 entity.HasOne(p => p.Account)
-             .WithOne(a => a.Profile)
-             .HasForeignKey<Profile>(p => p.AccountId)
-             .OnDelete(DeleteBehavior.Restrict);
+                     .WithOne(a => a.Profile)
+                     .HasForeignKey<Profile>(p => p.AccountId)
+                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
 
