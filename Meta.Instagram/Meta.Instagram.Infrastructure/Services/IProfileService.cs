@@ -11,5 +11,6 @@ namespace Meta.Instagram.Infrastructure.Services
         Task<IEnumerable<ProfileFollowContract>> GetProfileFollowingAsync(string profileId);
         Task FollowProfileAsync(string followingId, FollowRequest request);
         Task UnFollowProfileAsync(string followingId, FollowRequest request);
+        Task UploadPictureAsync(string profileId, UploadPictureRequest request);  
     }
 }

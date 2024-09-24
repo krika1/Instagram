@@ -15,6 +15,11 @@
             return GenerateIdWithPrefix("prf_");
         }
 
+        public static string GeneratePictureId()
+        {
+            return GenerateIdWithPrefix("pic_");
+        }
+
         private static string GenerateIdWithPrefix(string prefix)
         {
             var randomChars = new string(Enumerable.Repeat(Characters, 32)
