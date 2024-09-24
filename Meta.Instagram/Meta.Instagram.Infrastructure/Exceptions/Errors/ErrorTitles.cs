@@ -10,5 +10,9 @@
 
         public static string ResourceNotFoundTitle = "Resource Not Found";
 
+        public static string GetProfileErrorTitle = "Get Profile Failed";
+        public static string UpdateProfileErrorTitle = "Update Profile Failed";
+        public static string UnfollowProfileErrorTitle = "Unfollow Profile Failed";
+        public static string FollowProfileErrorTitle = "Follow Profile Failed";
     }
 }

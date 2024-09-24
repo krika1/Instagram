@@ -40,11 +40,11 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
             }
         }
 
@@ -67,11 +67,11 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UnfollowProfileErrorTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UnfollowProfileErrorTitle);
             }
         }
 
@@ -98,11 +98,11 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateProfileErrorTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateProfileErrorTitle);
             }
         }
 
@@ -125,11 +125,11 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
             }
         }
     }
