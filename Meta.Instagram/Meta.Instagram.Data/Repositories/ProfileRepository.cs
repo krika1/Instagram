@@ -4,7 +4,6 @@ using Meta.Instagram.Infrastructure.Exceptions;
 using Meta.Instagram.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Meta.Instagram.Data.Repositories
 {
@@ -74,6 +73,21 @@ namespace Meta.Instagram.Data.Repositories
                     .FirstOrDefaultAsync(x => x.ProfileId == profileId);
 
                 return profile!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new DatabaseException(ex.Message);
+            }
+        }
+
+        public async Task UnFollowProfileAsync(Follow follow)
+        {
+            try
+            {
+                _db.Follows.Remove(follow);
+
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
