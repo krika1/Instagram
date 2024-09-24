@@ -67,11 +67,11 @@ namespace Meta.Instagram.Api.Controllers
             }
             catch (DatabaseException ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UploadProfileErrorTitle);
             }
             catch (Exception ex)
             {
-                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UploadProfileErrorTitle);
             }
         }
 
@@ -213,7 +213,5 @@ namespace Meta.Instagram.Api.Controllers
                 return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
             }
         }
-
-
     }
 }

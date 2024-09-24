@@ -12,7 +12,11 @@
 
         public static string GetProfileErrorTitle = "Get Profile Failed";
         public static string UpdateProfileErrorTitle = "Update Profile Failed";
+        public static string UploadProfileErrorTitle = "Upload Picture Failed";
         public static string UnfollowProfileErrorTitle = "Unfollow Profile Failed";
         public static string FollowProfileErrorTitle = "Follow Profile Failed";
+
+        public static string GetPictureErrorTitle = "Get Picture Failed";
+        public static string DeletePictureErrorTitle = "Delete Picture Failed";
     }
 }

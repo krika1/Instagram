@@ -39,9 +39,11 @@ namespace Meta.Instagram.Api
 
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            builder.Services.AddScoped<IPictureRepository, PictureRepository>();
 
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
+            builder.Services.AddScoped<IPictureService, PictureService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
