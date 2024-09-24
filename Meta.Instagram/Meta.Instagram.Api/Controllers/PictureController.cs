@@ -1,4 +1,5 @@
 ﻿using Meta.Instagram.Infrastructure.DTOs.Contracts;
+using Meta.Instagram.Infrastructure.DTOs.Requests;
 using Meta.Instagram.Infrastructure.Exceptions;
 using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Helpers;
@@ -44,6 +45,33 @@ namespace Meta.Instagram.Api.Controllers
             catch (Exception ex)
             {
                 return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetPictureErrorTitle);
+            }
+        }
+
+        [HttpPut, Route("pictures/{pictureId}/likes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<PictureContract>> LikePictureAsync([BindRequired, FromRoute] string pictureId, [BindRequired, FromBody] LikeRequest request)
+        {
+            try
+            {
+                var picture = await _pictureService.LikePictureAsync(pictureId, request).ConfigureAwait(false);
+
+                return Ok(picture);
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.LikePictureErrorTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.LikePictureErrorTitle);
             }
         }
 

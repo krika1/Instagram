@@ -17,7 +17,8 @@ namespace Meta.Instagram.Api.Mapping
                 .ForMember(dest => dest.PictureId, opt => opt.MapFrom(src => src.PictureId))
                 .ForMember(dest => dest.Descripton, opt => opt.MapFrom(src => src.Descripton))
                 .ForMember(dest => dest.UploadAt, opt => opt.MapFrom(src => src.UploadAt))
-                .ForMember(dest => dest.PicturePath, opt => opt.MapFrom(src => src.PicturePath));
+                .ForMember(dest => dest.PicturePath, opt => opt.MapFrom(src => src.PicturePath))
+                .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Count));
         }
     }
 }

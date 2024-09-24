@@ -16,6 +16,7 @@ namespace Meta.Instagram.Data.Context
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<Picture> Pictures { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,23 @@ namespace Meta.Instagram.Data.Context
             CreateProfileModelBuilder(modelBuilder);
             CreateProfileFollowModelBuilder(modelBuilder);
             CreatePictureModelBuilder(modelBuilder);
+            CreateLikeModelBuilder(modelBuilder);
+        }
+
+        private void CreateLikeModelBuilder(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Like>()
+            .HasKey(l => l.LikeId);                
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.Profile)
+                .WithMany() 
+                .HasForeignKey(l => l.ProfileId);
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.Picture)
+                .WithMany(p => p.Likes) 
+                .HasForeignKey(l => l.PictureId);
         }
 
         private void CreatePictureModelBuilder(ModelBuilder modelBuilder)

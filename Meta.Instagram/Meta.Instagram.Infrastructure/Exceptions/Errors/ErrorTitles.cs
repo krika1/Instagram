@@ -17,6 +17,7 @@
         public static string FollowProfileErrorTitle = "Follow Profile Failed";
 
         public static string GetPictureErrorTitle = "Get Picture Failed";
+        public static string LikePictureErrorTitle = "Like Picture Failed";
         public static string DeletePictureErrorTitle = "Delete Picture Failed";
     }
 }

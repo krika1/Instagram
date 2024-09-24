@@ -20,6 +20,11 @@
             return GenerateIdWithPrefix("pic_");
         }
 
+        public static string GenerateLikeId()
+        {
+            return GenerateIdWithPrefix("lik_");
+        }
+
         private static string GenerateIdWithPrefix(string prefix)
         {
             var randomChars = new string(Enumerable.Repeat(Characters, 32)

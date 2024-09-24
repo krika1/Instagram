@@ -9,5 +9,7 @@
 
         public string ProfileId { get; set; } = null!;
         public Profile Profile { get; set; } = null!;
+
+        public ICollection<Like> Likes { get; set; } = [];
     }
 }
