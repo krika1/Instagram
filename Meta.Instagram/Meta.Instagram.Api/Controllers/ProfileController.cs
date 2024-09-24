@@ -21,16 +21,43 @@ namespace Meta.Instagram.Api.Controllers
             _profileService = profileService;
         }
 
-        [HttpPost, Route("profiles/{profileId}/follow")]
+        [HttpPost, Route("profiles/{profileId}/followers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> FollowProfileAsync([BindRequired, FromRoute] string profileId, [BindRequired, FromForm] FollowRequest request)
+        public async Task<ActionResult> FollowProfileAsync([BindRequired, FromRoute] string profileId, [BindRequired, FromBody] FollowRequest request)
         {
             try
             {
                 await _profileService.FollowProfileAsync(profileId, request).ConfigureAwait(false);
+
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.UpdateAccountFailedTitle);
+            }
+        }
+
+        [HttpDelete, Route("profiles/{profileId}/followers")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UnFollowProfileAsync([BindRequired, FromRoute] string profileId, [BindRequired, FromBody] FollowRequest request)
+        {
+            try
+            {
+                await _profileService.UnFollowProfileAsync(profileId, request).ConfigureAwait(false);
 
                 return Ok();
             }

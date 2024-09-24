@@ -24,12 +24,22 @@ namespace Meta.Instagram.Bussines.Services
 
         public async Task FollowProfileAsync(string followingId, FollowRequest request)
         {
-            await GetProfile(followingId).ConfigureAwait(false);
             await GetProfile(request.FollowerId!).ConfigureAwait(false);
+            await GetProfile(followingId).ConfigureAwait(false);
 
             var followRequest = new Follow { FollowerId =  request.FollowerId, FollowingId = followingId };
 
             await _profileRepository.FollowProfileAsync(followRequest).ConfigureAwait(false);
+        }
+
+        public async Task UnFollowProfileAsync(string followingId, FollowRequest request)
+        {
+            await GetProfile(followingId).ConfigureAwait(false);
+            var follower = await GetProfile(request.FollowerId!).ConfigureAwait(false);
+
+            var followRequest = follower.Following!.Where(x => x.FollowingId == followingId).FirstOrDefault();
+
+            await _profileRepository.UnFollowProfileAsync(followRequest!).ConfigureAwait(false);
         }
 
         public async Task<ProfileContract> GetProfileAsync(string profileId)
@@ -76,7 +86,7 @@ namespace Meta.Instagram.Bussines.Services
             return _mapper.Map<ProfileContract>(updatedProfile);
         }
 
-        public async Task<Profile> GetProfile(string profileId)
+        private async Task<Profile> GetProfile(string profileId)
         {
             return await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
                    ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);

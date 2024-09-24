@@ -6,6 +6,7 @@ namespace Meta.Instagram.Infrastructure.Repositories
     {
         Task CreateProfileAsync(Profile profile);
         Task FollowProfileAsync(Follow follow);
+        Task UnFollowProfileAsync(Follow follow);
         Task DeleteProfileAsync(Profile profile);
         Task<Profile> GetProfileAsync(string profileId);
         Task<Profile> UpdateProfileAsync(Profile profile);
