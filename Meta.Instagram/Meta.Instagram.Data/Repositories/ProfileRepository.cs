@@ -69,7 +69,9 @@ namespace Meta.Instagram.Data.Repositories
             {
                 var profile = await _db.Profiles
                     .Include(x => x.Followers)
+                    .ThenInclude(f => f.Follower)
                     .Include(x => x.Following)
+                    .ThenInclude(f => f.Following)
                     .FirstOrDefaultAsync(x => x.ProfileId == profileId);
 
                 return profile!;

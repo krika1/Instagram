@@ -2,10 +2,10 @@
 {
     public class Follow
     {
-        public string? FollowerId { get; set; }
-        public Profile? Follower { get; set; }
+        public string FollowerId { get; set; } = null!;
+        public Profile Follower { get; set; } = null!;
 
-        public string? FollowingId { get; set; }
-        public Profile? Following { get; set; }
+        public string FollowingId { get; set; } = null!;
+        public Profile Following { get; set; } = null!;
     }
 }
