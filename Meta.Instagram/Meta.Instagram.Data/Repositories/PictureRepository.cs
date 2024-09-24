@@ -47,5 +47,22 @@ namespace Meta.Instagram.Data.Repositories
                 throw new DatabaseException(ex.Message);
             }
         }
+
+        public async Task<Picture> LikePictureAsync(Picture picture, Like like)
+        {
+            try
+            {
+                picture.Likes.Add(like);
+
+                await _db.SaveChangesAsync();
+
+                return await GetPictureAsync(picture.PictureId!);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new DatabaseException(ex.Message);
+            }
+        }
     }
 }
