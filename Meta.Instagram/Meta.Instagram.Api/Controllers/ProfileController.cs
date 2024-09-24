@@ -48,6 +48,33 @@ namespace Meta.Instagram.Api.Controllers
             }
         }
 
+        [HttpPost, Route("profiles/{profileId}/picture")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UploadPictureAsync([BindRequired, FromRoute] string profileId, [BindRequired, FromForm] UploadPictureRequest request)
+        {
+            try
+            {
+                await _profileService.UploadPictureAsync(profileId, request).ConfigureAwait(false);
+
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.FollowProfileErrorTitle);
+            }
+        }
+
         [HttpDelete, Route("profiles/{profileId}/followers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

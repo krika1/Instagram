@@ -15,12 +15,40 @@ namespace Meta.Instagram.Data.Context
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Follow> Follows { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateAccountModelBuilder(modelBuilder);
             CreateProfileModelBuilder(modelBuilder);
             CreateProfileFollowModelBuilder(modelBuilder);
+            CreatePictureModelBuilder(modelBuilder);
+        }
+
+        private void CreatePictureModelBuilder(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Picture>(entity =>
+            {
+                entity.HasKey(a => a.PictureId);
+
+                entity.Property(a => a.PictureId)
+                      .IsRequired();
+
+                entity.Property(a => a.PicturePath)
+                    .IsRequired();
+
+                entity.Property(a => a.Descripton)
+                      .IsRequired();
+
+                entity.Property(a => a.UploadAt)
+                      .IsRequired()
+                      .HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasOne(p => p.Profile)
+                    .WithMany(p => p.Pictures)
+                    .HasForeignKey(p => p.ProfileId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         private void CreateProfileFollowModelBuilder(ModelBuilder modelBuilder)

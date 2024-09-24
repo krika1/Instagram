@@ -14,6 +14,8 @@
 
         public ICollection<Follow> Followers { get; set; } = [];
         public ICollection<Follow> Following { get; set; } = [];
+
+        public ICollection<Picture> Pictures { get; set; } = [];
     }
 }
 

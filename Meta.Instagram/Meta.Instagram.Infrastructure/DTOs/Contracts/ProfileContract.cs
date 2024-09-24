@@ -9,5 +9,7 @@
         public bool IsPublic { get; set; }
         public int Followers { get; set; }
         public int Following { get; set; }
+
+        public IEnumerable<PictureContract>? Pictures { get; set; }
     }
 }

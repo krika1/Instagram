@@ -7,6 +7,8 @@ using Meta.Instagram.Infrastructure.Exceptions.Errors;
 using Meta.Instagram.Infrastructure.Helpers;
 using Meta.Instagram.Infrastructure.Repositories;
 using Meta.Instagram.Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 using Profile = Meta.Instagram.Infrastructure.Entities.Profile;
 
 namespace Meta.Instagram.Bussines.Services
@@ -27,7 +29,7 @@ namespace Meta.Instagram.Bussines.Services
             await GetProfile(request.FollowerId!).ConfigureAwait(false);
             await GetProfile(followingId).ConfigureAwait(false);
 
-            var followRequest = new Follow { FollowerId =  request.FollowerId, FollowingId = followingId };
+            var followRequest = new Follow { FollowerId =  request.FollowerId!, FollowingId = followingId };
 
             await _profileRepository.FollowProfileAsync(followRequest).ConfigureAwait(false);
         }
@@ -55,18 +57,7 @@ namespace Meta.Instagram.Bussines.Services
 
             if (request.Picture is not null)
             {
-                var fileExtension = Path.GetExtension(request.Picture.FileName).ToLowerInvariant();
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    throw new BadRequestException(ErrorMessages.InvalidFileTypeErrorMessage);
-                }
-
-                var fileName = Guid.NewGuid() + fileExtension; // Unique file name
-                var filePath = Path.Combine(Constants.BlobPath, fileName);
-
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await request.Picture.CopyToAsync(stream);
+                var filePath = await SavePictureAsync(request.Picture).ConfigureAwait(false);
 
                 profile.PicturePath = filePath;
             }
@@ -92,11 +83,11 @@ namespace Meta.Instagram.Bussines.Services
 
             var followers = new List<ProfileFollowContract>();
 
-            foreach(var follower in profile.Followers!)
+            foreach (var follower in profile.Followers!)
             {
                 var follow = _mapper.Map<ProfileFollowContract>(follower.Follower);
 
-                followers.Add(follow);   
+                followers.Add(follow);
             }
 
             return followers;
@@ -118,10 +109,41 @@ namespace Meta.Instagram.Bussines.Services
             return followings;
         }
 
+        public async Task UploadPictureAsync(string profileId, UploadPictureRequest request)
+        {
+            var profile = await GetProfile(profileId).ConfigureAwait(false);
+
+            var filePath = await SavePictureAsync(request.Picture!).ConfigureAwait(false);
+
+            var picture = _mapper.Map<Picture>(request);
+            picture.ProfileId = profileId;
+            picture.PicturePath = filePath;
+
+            await _profileRepository.UploadPictureAsync(profile, picture).ConfigureAwait(false);
+        }
+
         private async Task<Profile> GetProfile(string profileId)
         {
             return await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
                    ?? throw new NotFoundException(ErrorMessages.ProfileNotFoundErrorMessage);
+        }
+
+        private async Task<string> SavePictureAsync(IFormFile picture)
+        {
+            var fileExtension = Path.GetExtension(picture.FileName).ToLowerInvariant();
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                throw new BadRequestException(ErrorMessages.InvalidFileTypeErrorMessage);
+            }
+
+            var fileName = Guid.NewGuid() + fileExtension; // Unique file name
+            var filePath = Path.Combine(Constants.BlobPath, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await picture.CopyToAsync(stream);
+
+            return filePath;
         }
     }
 }

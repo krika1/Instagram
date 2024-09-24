@@ -4,6 +4,7 @@ using Meta.Instagram.Infrastructure.Exceptions;
 using Meta.Instagram.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Meta.Instagram.Data.Repositories
 {
@@ -72,6 +73,7 @@ namespace Meta.Instagram.Data.Repositories
                     .ThenInclude(f => f.Follower)
                     .Include(x => x.Following)
                     .ThenInclude(f => f.Following)
+                    .Include(x => x.Pictures)
                     .FirstOrDefaultAsync(x => x.ProfileId == profileId);
 
                 return profile!;
@@ -107,6 +109,21 @@ namespace Meta.Instagram.Data.Repositories
                 await _db.SaveChangesAsync();
 
                 return updatedEntry.Entity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new DatabaseException(ex.Message);
+            }
+        }
+
+        public async Task UploadPictureAsync(Profile profile, Picture picture)
+        {
+            try
+            {
+                profile.Pictures.Add(picture);
+
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
