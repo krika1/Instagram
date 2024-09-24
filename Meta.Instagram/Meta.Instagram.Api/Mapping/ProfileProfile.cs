@@ -18,6 +18,12 @@ namespace Meta.Instagram.Api.Mapping
             _ = CreateMap<Infrastructure.Entities.Profile, ProfileContract>()
                 .ForMember(dest => dest.Following, opt => opt.MapFrom(src => src.Following!.Count))
                .ForMember(dest => dest.Followers, opt => opt.MapFrom(src => src.Followers!.Count));
+
+            _ = CreateMap<Infrastructure.Entities.Profile, ProfileFollowContract>()
+              .ForMember(dest => dest.ProfileId, opt => opt.MapFrom(src => src.ProfileId))
+              .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+              .ForMember(dest => dest.PicturePath, opt => opt.MapFrom(src => src.PicturePath))
+              .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username));
         }
     }
 }

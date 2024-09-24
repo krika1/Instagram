@@ -132,5 +132,61 @@ namespace Meta.Instagram.Api.Controllers
                 return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
             }
         }
+
+        [HttpGet, Route("profiles/{profileId}/followers")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ProfileContract>> GetProfileFollowersAsync([BindRequired, FromRoute] string profileId)
+        {
+            try
+            {
+                var followers = await _profileService.GetProfileFollowersAsync(profileId).ConfigureAwait(false);
+
+                return Ok(followers);
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
+            }
+        }
+
+        [HttpGet, Route("profiles/{profileId}/following")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ProfileContract>> GetProfileFollowingAsync([BindRequired, FromRoute] string profileId)
+        {
+            try
+            {
+                var following = await _profileService.GetProfileFollowingAsync(profileId).ConfigureAwait(false);
+
+                return Ok(following);
+            }
+            catch (NotFoundException ex)
+            {
+                return ObjectResultConverter.ToNotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
+            }
+            catch (Exception ex)
+            {
+                return ObjectResultConverter.ToInternalException(ex.Message, ErrorTitles.GetProfileErrorTitle);
+            }
+        }
+
+
     }
 }

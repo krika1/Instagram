@@ -12,7 +12,8 @@
         public string? PicturePath { get; set; }
         public bool IsPublic { get; set; }
 
-        public ICollection<Follow>? Followers { get; set; }
-        public ICollection<Follow>? Following { get; set; }
+        public ICollection<Follow> Followers { get; set; } = [];
+        public ICollection<Follow> Following { get; set; } = [];
     }
 }
+

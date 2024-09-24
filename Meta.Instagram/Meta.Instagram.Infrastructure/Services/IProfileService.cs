@@ -7,6 +7,8 @@ namespace Meta.Instagram.Infrastructure.Services
     {
         Task<ProfileContract> UpdateProfileAsync(string profileId, ChangeProfileRequest request);
         Task<ProfileContract> GetProfileAsync(string profileId);
+        Task<IEnumerable<ProfileFollowContract>> GetProfileFollowersAsync(string profileId);
+        Task<IEnumerable<ProfileFollowContract>> GetProfileFollowingAsync(string profileId);
         Task FollowProfileAsync(string followingId, FollowRequest request);
         Task UnFollowProfileAsync(string followingId, FollowRequest request);
     }

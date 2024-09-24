@@ -86,6 +86,38 @@ namespace Meta.Instagram.Bussines.Services
             return _mapper.Map<ProfileContract>(updatedProfile);
         }
 
+        public async Task<IEnumerable<ProfileFollowContract>> GetProfileFollowersAsync(string profileId)
+        {
+            var profile = await GetProfile(profileId).ConfigureAwait(false);
+
+            var followers = new List<ProfileFollowContract>();
+
+            foreach(var follower in profile.Followers!)
+            {
+                var follow = _mapper.Map<ProfileFollowContract>(follower.Follower);
+
+                followers.Add(follow);   
+            }
+
+            return followers;
+        }
+
+        public async Task<IEnumerable<ProfileFollowContract>> GetProfileFollowingAsync(string profileId)
+        {
+            var profile = await GetProfile(profileId).ConfigureAwait(false);
+
+            var followings = new List<ProfileFollowContract>();
+
+            foreach (var following in profile.Following!)
+            {
+                var follow = _mapper.Map<ProfileFollowContract>(following.Following);
+
+                followings.Add(follow);
+            }
+
+            return followings;
+        }
+
         private async Task<Profile> GetProfile(string profileId)
         {
             return await _profileRepository.GetProfileAsync(profileId).ConfigureAwait(false)
